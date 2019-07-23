@@ -16,10 +16,6 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.json.module.MercenaryKotlinModule
-import co.mercenary.creators.kotlin.util.time.TimeAndDate
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.*
 
 abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContextAware {
@@ -32,10 +28,6 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
 
     protected val context: ApplicationContext
         get() = application
-
-    fun getDefaultJackson2ObjectMapperBuilderCustomizer() = Jackson2ObjectMapperBuilderCustomizer {
-        it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule(), ParameterNamesModule())
-    }
 
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
 
