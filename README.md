@@ -10,13 +10,13 @@ Maven:
 <dependency>
   <groupId>co.mercenary-creators</groupId>
   <artifactId>mercenary-creators-kotlin-boot</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
 </dependency>
 ```
 Gradle:
 ```
 dependencies {
-    compile(group: 'co.mercenary-creators', name: 'mercenary-creators-kotlin-boot', version: '0.0.3-SNAPSHOT')
+    compile(group: 'co.mercenary-creators', name: 'mercenary-creators-kotlin-boot', version: '0.0.4-SNAPSHOT')
 }
 ```
 

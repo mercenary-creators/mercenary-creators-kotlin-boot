@@ -19,10 +19,13 @@ package co.mercenary.creators.kotlin.boot
 import org.springframework.context.*
 import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
+import java.util.concurrent.ConcurrentHashMap
 
 abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContextAware {
 
     private lateinit var application: ApplicationContext
+
+    private val cachedclients = ConcurrentHashMap<String, WebClient>()
 
     override fun setApplicationContext(context: ApplicationContext) {
         application = context
@@ -36,10 +39,14 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
     }
 
     inline fun <reified T : Any> getWebFlux(base: String): Flux<T> {
-        return WebClient.create(base).get().retrieve().bodyToFlux()
+        return getWebClient(base).get().retrieve().bodyToFlux()
     }
 
-    fun getWebClient(base: String): WebClient = WebClient.create(base)
+    fun getWebClient(base: String): WebClient {
+        return cachedclients.computeIfAbsent(base) {
+            WebClient.create(it)
+        }
+    }
 
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
 

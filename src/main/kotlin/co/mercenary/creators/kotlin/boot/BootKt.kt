@@ -18,22 +18,11 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.json.module.MercenaryKotlinModule
 import co.mercenary.creators.kotlin.util.time.TimeAndDate
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import org.springframework.boot.*
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
+import org.springframework.boot.runApplication
 import org.springframework.context.ConfigurableApplicationContext
 
 inline fun <reified T : Any> boot(vararg args: String): ConfigurableApplicationContext = runApplication<T>(*args) {
     TimeAndDate.setDefaultTimeZone()
 }
 
-inline fun <reified T : Any> boot(vararg args: String, init: SpringApplication.() -> Unit): ConfigurableApplicationContext = runApplication<T>(*args) {
-    TimeAndDate.setDefaultTimeZone()
-    init()
-}
-
-fun getDefaultJackson2ObjectMapperBuilderCustomizer() = Jackson2ObjectMapperBuilderCustomizer {
-    it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule(), ParameterNamesModule())
-}
