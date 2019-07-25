@@ -17,6 +17,8 @@
 package co.mercenary.creators.kotlin.boot
 
 import org.springframework.context.*
+import org.springframework.web.reactive.function.client.*
+import reactor.core.publisher.Flux
 
 abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContextAware {
 
@@ -28,6 +30,16 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
 
     protected val context: ApplicationContext
         get() = application
+
+    inline fun <reified T : Any> getWebFlux(client: WebClient): Flux<T> {
+        return client.get().retrieve().bodyToFlux()
+    }
+
+    inline fun <reified T : Any> getWebFlux(base: String): Flux<T> {
+        return WebClient.create(base).get().retrieve().bodyToFlux()
+    }
+
+    fun getWebClient(base: String): WebClient = WebClient.create(base)
 
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
 
