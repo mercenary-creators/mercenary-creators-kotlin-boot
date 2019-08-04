@@ -39,7 +39,7 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
     }
 
     inline fun <reified T : Any> getWebFlux(base: String): Flux<T> {
-        return getWebClient(base).get().retrieve().bodyToFlux()
+        return getWebFlux(getWebClient(base))
     }
 
     fun getWebClient(base: String): WebClient {
