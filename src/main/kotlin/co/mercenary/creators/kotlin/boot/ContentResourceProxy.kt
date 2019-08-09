@@ -89,7 +89,7 @@ class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRI
                 }
                 return look
             }
-            return type.toLowerTrimValidated()
+            return type.toLowerTrim()
         }
 
         @JvmStatic
