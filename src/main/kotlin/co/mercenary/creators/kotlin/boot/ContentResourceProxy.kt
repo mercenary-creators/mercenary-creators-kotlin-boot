@@ -21,7 +21,7 @@ import co.mercenary.creators.kotlin.util.io.*
 import org.springframework.core.io.*
 import java.io.*
 
-class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
+open class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 
     private val cache: CachedContentResource by lazy {
         ByteArrayContentResource(getContentData(), getContentPath(), getContentType(), getContentTime())
@@ -57,13 +57,6 @@ class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRI
 
     override fun getInputStream(): InputStream {
         return base.inputStream
-    }
-
-    override fun getOutputStream(): OutputStream {
-        return when (base) {
-            is WritableResource -> base.outputStream
-            else -> throw MercenaryFatalExceptiion("Can't get OutputStream() for ${getDescription()}")
-        }
     }
 
     override fun isContentCache(): Boolean {

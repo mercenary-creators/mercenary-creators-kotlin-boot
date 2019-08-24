@@ -18,11 +18,24 @@
 
 package co.mercenary.creators.kotlin.boot
 
+import co.mercenary.creators.kotlin.util.MercenaryFatalExceptiion
+import co.mercenary.creators.kotlin.util.io.OutputContentResource
 import co.mercenary.creators.kotlin.util.time.TimeAndDate
 import org.springframework.boot.runApplication
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.io.*
+import java.io.OutputStream
 
 inline fun <reified T : Any> boot(vararg args: String): ConfigurableApplicationContext = runApplication<T>(*args) {
     TimeAndDate.setDefaultTimeZone()
 }
 
+fun Resource.proxy() = when (val base = this) {
+    is WritableResource -> object : ContentResourceProxy(base), OutputContentResource {
+        override fun getOutputStream(): OutputStream {
+            return base.outputStream
+        }
+    }
+    is InputStreamResource -> throw MercenaryFatalExceptiion("Can't get proxy() for $description")
+    else -> ContentResourceProxy(base)
+}
