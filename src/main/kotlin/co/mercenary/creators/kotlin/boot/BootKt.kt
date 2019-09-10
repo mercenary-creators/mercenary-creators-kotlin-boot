@@ -18,13 +18,15 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.util.MercenaryFatalExceptiion
-import co.mercenary.creators.kotlin.util.io.OutputContentResource
+import co.mercenary.creators.kotlin.util.*
+import co.mercenary.creators.kotlin.util.io.*
 import co.mercenary.creators.kotlin.util.time.TimeAndDate
 import org.springframework.boot.runApplication
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.core.io.*
-import java.io.OutputStream
+import java.io.*
+
+const val DEFAULT_JSON_RESULTS_NAME = "results"
 
 inline fun <reified T : Any> boot(vararg args: String): ConfigurableApplicationContext = runApplication<T>(*args) {
     TimeAndDate.setDefaultTimeZone()
@@ -36,6 +38,32 @@ fun Resource.proxy() = when (val base = this) {
             return base.outputStream
         }
     }
+    is AbstractFileResolvingResource -> {
+        when (base.isFile) {
+            true -> FileContentResource(File(getPathNormalizedOrElse(base.file.path)))
+            else -> URLContentResource(base.url)
+        }
+    }
     is InputStreamResource -> throw MercenaryFatalExceptiion("Can't get proxy() for $description")
     else -> ContentResourceProxy(base)
+}
+
+inline fun <T> inLoggingContext(args: Pair<String, Any>, block: () -> T): T {
+    return mu.withLoggingContext(args.first to args.second.toString(), block)
+}
+
+inline fun <T> inLoggingContext(args: Map<String, Any>, block: () -> T): T {
+    val hash = LinkedHashMap<String, String>(args.size)
+    for ((k, v) in args) {
+        hash[k] = v.toString()
+    }
+    return mu.withLoggingContext(hash, block)
+}
+
+inline fun <T> inLoggingContext(vararg args: Pair<String, Any>, block: () -> T): T {
+    val hash = LinkedHashMap<String, String>(args.size)
+    for ((k, v) in args) {
+        hash[k] = v.toString()
+    }
+    return mu.withLoggingContext(hash, block)
 }

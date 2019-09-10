@@ -16,12 +16,13 @@
 
 package co.mercenary.creators.kotlin.boot
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.context.*
 import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContextAware {
+abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
 
     private lateinit var application: ApplicationContext
 
@@ -31,7 +32,8 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
         application = context
     }
 
-    protected val context: ApplicationContext
+    val context: ApplicationContext
+        @JsonIgnore
         get() = application
 
     inline fun <reified T : Any> getWebFlux(client: WebClient): Flux<T> {
@@ -50,7 +52,13 @@ abstract class AbstractApplicationSupport : AbstractLogging(), ApplicationContex
 
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
 
-    fun getEnvironmentPropertyIrElse(name: String, other: String): String = context.environment.getProperty(name, other)
+    fun getEnvironmentProperty(name: String, other: String): String = context.environment.getProperty(name, other)
 
-    fun getEnvironmentPropertyOrElseCall(name: String, other: () -> String): String = getEnvironmentProperty(name) ?: other()
+    fun getEnvironmentProperty(name: String, other: () -> String): String = context.environment.getProperty(name) ?: other()
+
+    inline fun <reified T : Any> getEnvironmentPropertyOf(name: String): T? = context.environment.getProperty(name, T::class.java)
+
+    inline fun <reified T : Any> getEnvironmentPropertyOf(name: String, other: T): T = context.environment.getProperty(name, T::class.java, other)
+
+    inline fun <reified T : Any> getEnvironmentPropertyOf(name: String, other: () -> T): T = context.environment.getProperty(name, T::class.java) ?: other()
 }
