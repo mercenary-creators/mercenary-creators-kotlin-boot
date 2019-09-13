@@ -39,11 +39,11 @@ abstract class AbstractApplicationDataSupport(private var results: String = DEFA
             results = toTrimOrElse(value, DEFAULT_JSON_RESULTS_NAME)
         }
 
-    fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
+    fun queryList(@SQL sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
 
-    fun query(sql: String, vararg args: Any?) = json(jsonResultsName to queryList(sql, *args))
+    fun query(@SQL sql: String, vararg args: Any?) = json(jsonResultsName to queryList(sql, *args))
 
-    inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(jsonResultsName to queryListOf<T>(sql, *args))
+    inline fun <reified T : Any> queryOf(@SQL sql: String, vararg args: Any?) = json(jsonResultsName to queryListOf<T>(sql, *args))
 
-    inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) emptyList() else toDataType(it) }
+    inline fun <reified T : Any> queryListOf(@SQL sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) emptyList() else toDataType(it) }
 }

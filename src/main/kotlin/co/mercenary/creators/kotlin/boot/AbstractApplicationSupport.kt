@@ -15,7 +15,7 @@
  */
 
 package co.mercenary.creators.kotlin.boot
-
+import co.mercenary.creators.kotlin.util.Logging
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.context.*
 import org.springframework.web.reactive.function.client.*
