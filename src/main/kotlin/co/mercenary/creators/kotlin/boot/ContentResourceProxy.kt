@@ -18,8 +18,8 @@ package co.mercenary.creators.kotlin.boot
 
 import co.mercenary.creators.kotlin.util.*
 import co.mercenary.creators.kotlin.util.io.*
-import org.springframework.core.io.*
-import java.io.*
+import org.springframework.core.io.Resource
+import java.io.InputStream
 
 open class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 

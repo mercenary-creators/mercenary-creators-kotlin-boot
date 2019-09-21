@@ -16,16 +16,13 @@
 
 package co.mercenary.creators.kotlin.boot.test.main
 
-import co.mercenary.creators.kotlin.boot.data.SQL
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
 import org.junit.jupiter.api.Test
 
 class UsersTest : KotlinTest() {
     @Test
     fun test() {
-        @SQL
-        val look = "SELECT username, enabled FROM users"
-        val list = queryListOf<UserPartialData>(look)
+        val list = queryListOf<UserPartialData>("SELECT username, enabled FROM users")
         info { toJSONString(list) }
         assumeEach {
             assumeThat {

@@ -47,23 +47,3 @@ fun Resource.proxy() = when (val base = this) {
     is InputStreamResource -> throw MercenaryFatalExceptiion("Can't get proxy() for $description")
     else -> ContentResourceProxy(base)
 }
-
-inline fun <T> inLoggingContext(args: Pair<String, Any>, block: () -> T): T {
-    return mu.withLoggingContext(args.first to args.second.toString(), block)
-}
-
-inline fun <T> inLoggingContext(args: Map<String, Any>, block: () -> T): T {
-    val hash = LinkedHashMap<String, String>(args.size)
-    for ((k, v) in args) {
-        hash[k] = v.toString()
-    }
-    return mu.withLoggingContext(hash, block)
-}
-
-inline fun <T> inLoggingContext(vararg args: Pair<String, Any>, block: () -> T): T {
-    val hash = LinkedHashMap<String, String>(args.size)
-    for ((k, v) in args) {
-        hash[k] = v.toString()
-    }
-    return mu.withLoggingContext(hash, block)
-}
