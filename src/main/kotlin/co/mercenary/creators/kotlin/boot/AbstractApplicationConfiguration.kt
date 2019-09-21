@@ -27,10 +27,10 @@ import org.springframework.web.servlet.resource.PathResourceResolver
 abstract class AbstractApplicationConfiguration(private val list: List<String> = listOf("/resources/"), private val period: Int = 3600) : WebMvcConfigurer {
 
     @Bean
-    fun passwordEncoder() = SecurePasswordEncoder()
+    open fun passwordEncoder() = SecurePasswordEncoder()
 
     @Bean
-    fun datalakeJackson() = Jackson2ObjectMapperBuilderCustomizer {
+    open fun datalakeJackson() = Jackson2ObjectMapperBuilderCustomizer {
         it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule(), ParameterNamesModule())
     }
 
