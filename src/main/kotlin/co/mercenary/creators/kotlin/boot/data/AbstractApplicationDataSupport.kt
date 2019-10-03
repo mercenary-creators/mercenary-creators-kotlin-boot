@@ -18,7 +18,7 @@ package co.mercenary.creators.kotlin.boot.data
 
 import co.mercenary.creators.kotlin.*
 import co.mercenary.creators.kotlin.boot.*
-import co.mercenary.creators.kotlin.util.*
+import co.mercenary.creators.kotlin.util.toTrimOrElse
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
@@ -38,6 +38,8 @@ abstract class AbstractApplicationDataSupport(private var results: String = DEFA
         set(value) {
             results = toTrimOrElse(value, DEFAULT_JSON_RESULTS_NAME)
         }
+
+    fun update(sql: String, vararg args: Any?) = json(jsonResultsName to json("update" to jdbc.update(sql, *args)))
 
     fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
 

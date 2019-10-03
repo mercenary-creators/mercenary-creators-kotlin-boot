@@ -30,7 +30,7 @@ abstract class AbstractApplicationConfiguration(private val list: List<String> =
     open fun passwordEncoder() = SecurePasswordEncoder()
 
     @Bean
-    open fun datalakeJackson() = Jackson2ObjectMapperBuilderCustomizer {
+    open fun bootJackson() = Jackson2ObjectMapperBuilderCustomizer {
         it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule(), ParameterNamesModule())
     }
 

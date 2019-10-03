@@ -94,7 +94,7 @@ open class ContentResourceProxy(private val base: Resource, path: String = EMPTY
                 }
             }
             catch (cause: Throwable) {
-                Throwables.assert(cause)
+                Throwables.thrown(cause)
             }
             return getPathNormalizedOrElse(path)
         }
