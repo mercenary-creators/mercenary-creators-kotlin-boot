@@ -21,7 +21,7 @@ import co.mercenary.creators.kotlin.util.io.*
 import org.springframework.core.io.Resource
 import java.io.InputStream
 
-open class ContentResourceProxy(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
+open class ContentResourceProxy @JvmOverloads constructor(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 
     private val cache: CachedContentResource by lazy {
         ByteArrayContentResource(getContentData(), getContentPath(), getContentType(), getContentTime())

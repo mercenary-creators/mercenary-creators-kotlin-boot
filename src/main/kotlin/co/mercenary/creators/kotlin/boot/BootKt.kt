@@ -29,6 +29,7 @@ import java.io.*
 const val DEFAULT_JSON_RESULTS_NAME = "results"
 
 inline fun <reified T : Any> boot(vararg args: String): ConfigurableApplicationContext = runApplication<T>(*args) {
+    LoggingFactory
     TimeAndDate.setDefaultTimeZone()
 }
 

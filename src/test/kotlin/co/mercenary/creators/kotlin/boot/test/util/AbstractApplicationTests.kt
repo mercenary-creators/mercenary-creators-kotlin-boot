@@ -18,7 +18,7 @@ package co.mercenary.creators.kotlin.boot.test.util
 
 import co.mercenary.creators.kotlin.boot.DEFAULT_JSON_RESULTS_NAME
 import co.mercenary.creators.kotlin.boot.data.AbstractApplicationDataSupport
-import co.mercenary.creators.kotlin.json.JSONStatic
+import co.mercenary.creators.kotlin.json.base.JSONStatic
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [MainTestConfiguration::class])
 @TestPropertySource(properties = ["test.bean.name=mercenary:test"], locations = ["classpath:application.properties"])
-abstract class AbstractApplicationTests(results: String = DEFAULT_JSON_RESULTS_NAME) : AbstractApplicationDataSupport(results) {
+abstract class AbstractApplicationTests @JvmOverloads constructor(results: String = DEFAULT_JSON_RESULTS_NAME) : AbstractApplicationDataSupport(results) {
 
     @Autowired
     private lateinit var pass: PasswordEncoder
@@ -50,6 +50,14 @@ abstract class AbstractApplicationTests(results: String = DEFAULT_JSON_RESULTS_N
     fun assertFalse(condition: Boolean) {
         Assertions.assertFalse(condition)
     }
+
+    fun hours(value: Int): Long = java.util.concurrent.TimeUnit.HOURS.toMillis(value.toLong())
+
+    fun minutes(value: Int): Long = java.util.concurrent.TimeUnit.MINUTES.toMillis(value.toLong())
+
+    fun seconds(value: Int): Long = java.util.concurrent.TimeUnit.SECONDS.toMillis(value.toLong())
+
+    fun milliseconds(value: Int): Long = java.util.concurrent.TimeUnit.MILLISECONDS.toMillis(value.toLong())
 
     fun assertEquals(expected: Any?, actual: Any?) {
         when (expected) {

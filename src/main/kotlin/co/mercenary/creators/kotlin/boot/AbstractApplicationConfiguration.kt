@@ -24,10 +24,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.web.servlet.config.annotation.*
 import org.springframework.web.servlet.resource.PathResourceResolver
 
-abstract class AbstractApplicationConfiguration(private val list: List<String> = listOf("/resources/"), private val period: Int = 3600) : WebMvcConfigurer {
-
-    @Bean
-    open fun passwordEncoder() = SecurePasswordEncoder()
+abstract class AbstractApplicationConfiguration @JvmOverloads constructor(private val list: List<String> = listOf("/resources/"), private val period: Int = 3600) : WebMvcConfigurer {
 
     @Bean
     open fun bootJackson() = Jackson2ObjectMapperBuilderCustomizer {

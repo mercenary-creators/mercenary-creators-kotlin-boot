@@ -19,7 +19,6 @@ package co.mercenary.creators.kotlin.boot.test.make
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
 import co.mercenary.creators.kotlin.util.*
 import org.junit.jupiter.api.Test
-import java.sql.Date
 
 class ServerTest : KotlinTest() {
     @Test
@@ -29,11 +28,13 @@ class ServerTest : KotlinTest() {
         val data = update("DELETE FROM servers")
         info { data }
         repeat(20) {
-            val time = getTimeStamp()
+            val even = it.rem(2) == 0
             val addy = "192.178.255." + Randoms.getInteger(255)
-            val type = if (it.rem(2) == 1) "Linux" else "macOS"
-            val rack = Randoms.getString(10).toUpperCase().plus("-").plus(Randoms.getInteger(10))
-            val many = update("INSERT INTO servers(rack,address,boot,installed,type,disks) VALUES(?,?,?,?,?,?)", rack, addy, Randoms.getBoolean(), Date(time), type, Randoms.getInteger(10).plus(6))
+            val node = it.toString(16).toUpperCase().padStart(8, '0')
+            val time = getTimeStamp().plus(seconds(it).plus(milliseconds(it))).toDate()
+            val type = if (even) "Linux" else if (Randoms.getBoolean()) "macOS" else "Windows"
+            val rack = Randoms.getString(10).toUpperCase().plus("-").plus(Randoms.getInteger(6).plus(1))
+            val many = update("INSERT INTO servers(node,rack,address,boot,installed,type,disks) VALUES(?,?,?,?,?,?,?)", node, rack, addy, Randoms.getBoolean().and(even).not(), time, type, Randoms.getInteger(6).plus(10))
             info { many }
         }
         val look = query("SELECT * FROM servers")

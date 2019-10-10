@@ -16,15 +16,18 @@
 
 package co.mercenary.creators.kotlin.boot.test.util
 
-import co.mercenary.creators.kotlin.boot.SecurePasswordEncoder
+import co.mercenary.creators.kotlin.boot.data.AbstractDataSecurityConfiguration
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.context.annotation.Bean
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 
+@EnableWebSecurity
 @SpringBootConfiguration
 @EnableAutoConfiguration
-class MainTestConfiguration {
+class MainTestConfiguration : AbstractDataSecurityConfiguration() {
 
-    @Bean
-    fun passwordEncoder() = SecurePasswordEncoder()
+    override fun configure(conf: HttpSecurity) {
+        conf.authorizeRequests().antMatchers("/open/**").permitAll().antMatchers("/user/**").hasAuthority("USER").and().httpBasic().and().csrf().disable()
+    }
 }

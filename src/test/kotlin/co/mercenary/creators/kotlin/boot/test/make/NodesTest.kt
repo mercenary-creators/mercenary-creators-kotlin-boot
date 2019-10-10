@@ -19,7 +19,6 @@ package co.mercenary.creators.kotlin.boot.test.make
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
 import co.mercenary.creators.kotlin.util.*
 import org.junit.jupiter.api.Test
-import java.sql.Date
 
 class NodesTest : KotlinTest() {
     @Test
@@ -29,10 +28,12 @@ class NodesTest : KotlinTest() {
         val data = update("DELETE FROM nodes")
         info { data }
         repeat(20) {
-            val time = getTimeStamp()
-            val type = if (it.rem(2) == 1) "Linux" else "macOS"
-            val name = uuid().toUpperCase().replace("-", ".").plus(".wf.domain")
-            val many = update("INSERT INTO nodes(name,type,time,active) VALUES(?,?,?,?)", name, type, Date(time), Randoms.getBoolean())
+            val even = it.rem(2) == 0
+            val node = it.toString(16).toUpperCase().padStart(8, '0')
+            val time = getTimeStamp().plus(seconds(it).plus(milliseconds(it))).toDate()
+            val type = if (even) "Linux" else if (Randoms.getBoolean()) "macOS" else "Windows"
+            val host = uuid().toUpperCase().replace("-", ".").plus(".${node}.dcam.wellsfargo.com")
+            val many = update("INSERT INTO nodes(name,host,type,time,active) VALUES(?,?,?,?,?)", node, host, type, time, Randoms.getBoolean().and(even).not())
             info { many }
         }
         val look = query("SELECT * FROM nodes")
