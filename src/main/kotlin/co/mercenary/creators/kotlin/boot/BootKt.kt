@@ -22,29 +22,20 @@ import co.mercenary.creators.kotlin.util.*
 import co.mercenary.creators.kotlin.util.io.*
 import co.mercenary.creators.kotlin.util.time.TimeAndDate
 import org.springframework.boot.runApplication
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.core.io.*
-import java.io.*
 
-const val DEFAULT_JSON_RESULTS_NAME = "results"
-
-inline fun <reified T : Any> boot(vararg args: String): ConfigurableApplicationContext = runApplication<T>(*args) {
+inline fun <reified T : Any> boot(vararg args: String) = runApplication<T>(*args) {
+    Encoders
     LoggingFactory
     TimeAndDate.setDefaultTimeZone()
 }
 
-fun Resource.proxy() = when (val base = this) {
+fun Resource.toContentResource() = when (val base = this) {
     is WritableResource -> object : ContentResourceProxy(base), OutputContentResource {
-        override fun getOutputStream(): OutputStream {
-            return base.outputStream
-        }
+        override fun getOutputStream() = base.outputStream
     }
-    is AbstractFileResolvingResource -> {
-        when (base.isFile) {
-            true -> FileContentResource(File(getPathNormalizedOrElse(base.file.path)))
-            else -> URLContentResource(base.url)
-        }
-    }
-    is InputStreamResource -> throw MercenaryFatalExceptiion("Can't get proxy() for $description")
+    is AbstractFileResolvingResource -> if (base.isFile) base.file.toContentResource() else base.url.toContentResource()
+    is ByteArrayResource -> base.inputStream.toByteArray().let { ByteArrayContentResource(it, Encoders.hex().encode(it)) }
+    is InputStreamResource -> base.inputStream.toByteArray().let { ByteArrayContentResource(it, Encoders.hex().encode(it)) }
     else -> ContentResourceProxy(base)
 }

@@ -16,40 +16,35 @@
 
 package co.mercenary.creators.kotlin.boot.data
 
-import co.mercenary.creators.kotlin.boot.*
+import co.mercenary.creators.kotlin.boot.AbstractApplicationSupport
 import co.mercenary.creators.kotlin.json.*
-import co.mercenary.creators.kotlin.util.*
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.*
 
-abstract class AbstractApplicationDataSupport @JvmOverloads constructor(private var name: String = DEFAULT_JSON_RESULTS_NAME) : AbstractApplicationSupport() {
+abstract class AbstractApplicationDataSupport @JvmOverloads constructor(private var results: String = "results", private val updated: String = "updated") : AbstractApplicationSupport() {
 
     @Autowired
     private lateinit var template: JdbcTemplate
 
-    val jdbc: JdbcTemplate
+    protected val jdbc: JdbcTemplate
         @JsonIgnore
         get() = template
 
-    var resultsName: String
+    protected var keys: String
         @JsonIgnore
-        get() = toTrimOrElse(name, DEFAULT_JSON_RESULTS_NAME)
+        get() = results.trim()
         set(value) {
-            name = toTrimOrElse(value, DEFAULT_JSON_RESULTS_NAME)
+            results = value.trim()
         }
 
-    val sqlDate: java.sql.Date
-        @JsonIgnore
-        get() = java.sql.Date(getTimeStamp())
+    protected fun update(sql: String, vararg args: Any?) = json(keys to json(updated.trim() to jdbc.update(sql, *args)))
 
-    fun update(sql: String, vararg args: Any?) = json(resultsName to json("update" to jdbc.update(sql, *args)))
+    protected fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
 
-    fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
+    protected fun query(sql: String, vararg args: Any?) = json(keys to queryList(sql, *args))
 
-    fun query(sql: String, vararg args: Any?) = json(resultsName to queryList(sql, *args))
+    protected inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(keys to queryListOf<T>(sql, *args))
 
-    inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(resultsName to queryListOf<T>(sql, *args))
-
-    inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) emptyList() else toDataType(it) }
+    protected inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) emptyList() else toDataType(it) }
 }

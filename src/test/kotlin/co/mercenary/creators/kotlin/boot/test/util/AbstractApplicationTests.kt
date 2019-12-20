@@ -16,23 +16,19 @@
 
 package co.mercenary.creators.kotlin.boot.test.util
 
-import co.mercenary.creators.kotlin.boot.DEFAULT_JSON_RESULTS_NAME
 import co.mercenary.creators.kotlin.boot.data.AbstractApplicationDataSupport
 import co.mercenary.creators.kotlin.json.base.JSONStatic
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit4.SpringRunner
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [MainTestConfiguration::class])
 @TestPropertySource(properties = ["test.bean.name=mercenary:test"], locations = ["classpath:application.properties"])
-abstract class AbstractApplicationTests @JvmOverloads constructor(results: String = DEFAULT_JSON_RESULTS_NAME) : AbstractApplicationDataSupport(results) {
+abstract class AbstractApplicationTests @JvmOverloads constructor(results: String = "results") : AbstractApplicationDataSupport(results) {
 
     @Autowired
     private lateinit var pass: PasswordEncoder

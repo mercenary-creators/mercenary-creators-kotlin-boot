@@ -17,7 +17,7 @@
 package co.mercenary.creators.kotlin.boot.test.main
 
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class UsersTest : KotlinTest() {
     @Test
@@ -38,5 +38,7 @@ class UsersTest : KotlinTest() {
                 (1..3) shouldBe (1..3)
             }
         }
+        val look = query("SELECT * FROM users")
+        info { look }
     }
 }

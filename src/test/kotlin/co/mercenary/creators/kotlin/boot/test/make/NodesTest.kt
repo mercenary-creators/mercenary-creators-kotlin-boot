@@ -18,7 +18,7 @@ package co.mercenary.creators.kotlin.boot.test.make
 
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
 import co.mercenary.creators.kotlin.util.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class NodesTest : KotlinTest() {
     @Test
