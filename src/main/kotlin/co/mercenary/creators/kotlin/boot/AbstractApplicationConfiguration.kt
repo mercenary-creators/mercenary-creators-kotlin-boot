@@ -40,9 +40,9 @@ abstract class AbstractApplicationConfiguration @JvmOverloads constructor(privat
     }
 
     companion object {
-        const val SLASH = "/"
-        const val STARS = "*"
-        fun snap(data: String): String {
+        private const val SLASH = "/"
+        private const val STARS = "*"
+        private fun snap(data: String): String {
             var temp = data.trim()
             while (temp.startsWith(SLASH)) {
                 temp = temp.removePrefix(SLASH).trim()
