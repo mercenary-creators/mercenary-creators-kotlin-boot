@@ -71,6 +71,10 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
         return cache
     }
 
+    override fun toRelativePath(path: String): ContentResource {
+        return base.createRelative(path).toContentResource()
+    }
+
     companion object {
 
         @JvmStatic
