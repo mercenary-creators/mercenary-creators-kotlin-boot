@@ -24,7 +24,7 @@ import java.io.InputStream
 open class ContentResourceProxy @JvmOverloads constructor(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 
     private val cache: CachedContentResource by lazy {
-        ByteArrayContentResource(getContentData(), getContentPath(), getContentType(), getContentTime())
+        ByteArrayContentResource(getContentData(), getContentPath(), getContentType(), getContentTime(), getContentLook())
     }
 
     private val name = getResolvedContentPath(base, path)
@@ -33,6 +33,10 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
 
     override fun getContentData(): ByteArray {
         return getInputStream().toByteArray()
+    }
+
+    override fun getContentLook(): ContentResourceLookup {
+        return { base.createRelative(it).toContentResource() }
     }
 
     override fun getContentPath(): String {
@@ -71,17 +75,13 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
         return cache
     }
 
-    override fun toRelativePath(path: String): ContentResource {
-        return base.createRelative(path).toContentResource()
-    }
-
     companion object {
 
         @JvmStatic
         fun getResolvedContentType(type: String, path: String): String {
-            if (isDefaultContentType(type)) {
+            if (type.isDefaultContentType()) {
                 val look = getDefaultContentTypeProbe().getContentType(path)
-                if (isDefaultContentType(look)) {
+                if (look.isDefaultContentType()) {
                     return toCommonContentTypes(path)
                 }
                 return look
