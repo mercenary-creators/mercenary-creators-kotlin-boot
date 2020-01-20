@@ -21,16 +21,19 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.crypto.password.PasswordEncoder
 import javax.sql.DataSource
 
 abstract class AbstractDataSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
+    private val encoder: SecurePasswordEncoder by lazy {
+        SecurePasswordEncoder()
+    }
+
     @Autowired
-    open fun configureAuthentication(conf: AuthenticationManagerBuilder, pass: PasswordEncoder, data: DataSource) {
-        conf.jdbcAuthentication().dataSource(data).passwordEncoder(pass)
+    open fun configureAuthentication(conf: AuthenticationManagerBuilder, data: DataSource) {
+        conf.jdbcAuthentication().dataSource(data).passwordEncoder(encoder)
     }
 
     @Bean
-    open fun passwordEncoder() = SecurePasswordEncoder()
+    open fun passwordEncoder() = encoder
 }
