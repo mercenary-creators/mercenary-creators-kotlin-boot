@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Mercenary Creators Company. All rights reserved.
+ * Copyright (c) 2020, Mercenary Creators Company. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
     val encoder: PasswordEncoder
         @JsonIgnore
         get() = pass
+
+    protected val printer: (Int, String) -> Unit = { i, s -> info { "%2d : %s".format(i + 1, s) }}
 
     fun toJSONString(data: Any, pretty: Boolean = true): String = JSONStatic.toJSONString(data, pretty)
 

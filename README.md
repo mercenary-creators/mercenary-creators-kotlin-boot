@@ -10,19 +10,19 @@ Maven:
 <dependency>
   <groupId>co.mercenary-creators</groupId>
   <artifactId>mercenary-creators-kotlin-boot</artifactId>
-  <version>9.3.1-SNAPSHOT</version>
+  <version>9.3.5-SNAPSHOT</version>
 </dependency>
 ```
 Gradle:
 ```
 dependencies {
-    compile(group: 'co.mercenary-creators', name: 'mercenary-creators-kotlin-boot', version: '9.3.1-SNAPSHOT')
+    compile(group: 'co.mercenary-creators', name: 'mercenary-creators-kotlin-boot', version: '9.3.5-SNAPSHOT')
 }
 ```
 
 License:
 
-Copyright (c) 2019, Mercenary Creators Company. All rights reserved.
+Copyright (c) 2020, Mercenary Creators Company. All rights reserved.
 
 Mercenary Creators Kotlin Boot is released under version 2.0 of the Apache License.
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Mercenary Creators Company. All rights reserved.
+ * Copyright (c) 2020, Mercenary Creators Company. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package co.mercenary.creators.kotlin.boot
 
 import co.mercenary.creators.kotlin.json.module.MercenaryKotlinModule
 import co.mercenary.creators.kotlin.util.time.TimeAndDate
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.web.servlet.config.annotation.*
@@ -28,7 +27,7 @@ abstract class AbstractApplicationConfiguration @JvmOverloads constructor(privat
 
     @Bean
     open fun bootJackson() = Jackson2ObjectMapperBuilderCustomizer {
-        it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule(), ParameterNamesModule())
+        it.dateFormat(TimeAndDate.getDefaultDateFormat()).timeZone(TimeAndDate.getDefaultTimeZone()).modulesToInstall(MercenaryKotlinModule())
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
