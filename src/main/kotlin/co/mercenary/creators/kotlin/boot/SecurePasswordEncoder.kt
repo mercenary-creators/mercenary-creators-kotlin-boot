@@ -16,9 +16,11 @@
 
 package co.mercenary.creators.kotlin.boot
 
+import co.mercenary.creators.kotlin.util.IgnoreForSerialize
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.security.SecureRandom
 
+@IgnoreForSerialize
 class SecurePasswordEncoder @JvmOverloads constructor(strength: Int = DEFAULT_STRENGTH, random: SecureRandom = SecureRandom()) : BCryptPasswordEncoder(strength, random) {
     companion object {
         const val DEFAULT_STRENGTH = 12

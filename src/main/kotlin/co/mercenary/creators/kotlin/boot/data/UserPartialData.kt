@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-package co.mercenary.creators.kotlin.boot.test.main
+package co.mercenary.creators.kotlin.boot.data
 
-data class UserPartialData(val username: String, val enabled: Boolean)
+import co.mercenary.creators.kotlin.json.base.JSONAware
+
+data class UserPartialData(val username: String, val enabled: Boolean) : JSONAware {
+    override fun toString() = toJSONString()
+}

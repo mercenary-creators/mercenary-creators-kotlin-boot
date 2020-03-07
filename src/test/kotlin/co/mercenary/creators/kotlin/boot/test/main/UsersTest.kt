@@ -16,6 +16,7 @@
 
 package co.mercenary.creators.kotlin.boot.test.main
 
+import co.mercenary.creators.kotlin.boot.data.UserPartialData
 import co.mercenary.creators.kotlin.boot.test.KotlinTest
 import org.junit.jupiter.api.Test
 

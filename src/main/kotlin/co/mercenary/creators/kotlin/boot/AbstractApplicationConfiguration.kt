@@ -32,7 +32,7 @@ abstract class AbstractApplicationConfiguration @JvmOverloads constructor(privat
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         if (list.isNotEmpty()) {
-            val locs = list.distinct().map { snap(it) }.filter { it.isNotEmpty() }.distinct().toTypedArray()
+            val locs = list.map { snap(it) }.filter { it.isNotEmpty() }.distinct().toTypedArray()
             val hand = locs.map { it.plus(STARS).plus(STARS) }.distinct().toTypedArray()
             registry.addResourceHandler(*hand).addResourceLocations(*locs).setCachePeriod(period).resourceChain(true).addResolver(PathResourceResolver())
         }

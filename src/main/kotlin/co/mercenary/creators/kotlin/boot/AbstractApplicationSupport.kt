@@ -16,40 +16,83 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.util.Logging
-import com.fasterxml.jackson.annotation.JsonIgnore
+import co.mercenary.creators.kotlin.util.*
+import org.reactivestreams.Publisher
 import org.springframework.context.*
-import org.springframework.web.reactive.function.client.*
-import reactor.core.publisher.Flux
-import java.util.concurrent.ConcurrentHashMap
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.*
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClient.Builder
+import reactor.core.publisher.*
 
+@IgnoreForSerialize
 abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
 
     private lateinit var application: ApplicationContext
 
-    private val cachedclients = ConcurrentHashMap<String, WebClient>()
+    private val clients = AtomicHashMap<String, WebClient>()
 
     override fun setApplicationContext(context: ApplicationContext) {
         application = context
     }
 
     val context: ApplicationContext
-        @JsonIgnore
+        @IgnoreForSerialize
         get() = application
 
-    inline fun <reified T : Any> getWebFlux(client: WebClient): Flux<T> {
-        return client.get().retrieve().bodyToFlux()
+    fun WebClient.RequestHeadersUriSpec<*>.path(path: String): WebClient.RequestHeadersSpec<*> {
+        return if (path.isEmpty()) this else uri(path)
     }
 
-    inline fun <reified T : Any> getWebFlux(base: String): Flux<T> {
-        return getWebFlux(getWebClient(base))
+    fun WebClient.RequestBodyUriSpec.path(path: String): WebClient.RequestBodySpec {
+        return if (path.isEmpty()) this else uri(path)
+    }
+
+    inline fun <reified T : Any> typeOf() = object : ParameterizedTypeReference<T>() {}
+
+    @JvmOverloads
+    inline fun <reified T : Any> getMonoOf(base: String, path: String = EMPTY_STRING): Mono<T> {
+        return getWebClient(base).get().path(path).retrieve().bodyToMono(typeOf())
+    }
+
+    @JvmOverloads
+    inline fun <reified T : Any> getFluxOf(base: String, path: String = EMPTY_STRING): Flux<T> {
+        return getWebClient(base).get().path(path).retrieve().bodyToFlux(typeOf())
+    }
+
+    @JvmOverloads
+    inline fun <reified T : Any> put(base: String, body: Any, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
+        return getWebClient(base).put().path(path).contentType(type).bodyValue(body).retrieve().bodyToMono(typeOf())
+    }
+
+    @JvmOverloads
+    inline fun <reified T : Any, reified B : Publisher<B>> put(base: String, body: B, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
+        return getWebClient(base).put().path(path).contentType(type).body(body, typeOf<B>()).retrieve().bodyToMono(typeOf())
+    }
+
+    @JvmOverloads
+    inline fun <reified T : Any> post(base: String, body: Any, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
+        return getWebClient(base).post().path(path).contentType(type).bodyValue(body).retrieve().bodyToMono(typeOf())
+    }
+
+    @JvmOverloads
+    inline fun <reified T : Any, reified B : Publisher<B>> post(base: String, body: B, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
+        return getWebClient(base).post().path(path).contentType(type).body(body, typeOf<B>()).retrieve().bodyToMono(typeOf())
     }
 
     fun getWebClient(base: String): WebClient {
-        return cachedclients.computeIfAbsent(base) {
-            WebClient.create(it)
+        return clients.computeIfAbsent(base) { path ->
+            WebClient.builder().baseUrl(path).customize().build()
         }
     }
+
+    fun Builder.customize(): Builder {
+        return customizeBuilderOf().invoke(this.defaultHeaders(customizeHeadersOf()))
+    }
+
+    open fun customizeHeadersOf(): (HttpHeaders) -> Unit = { }
+
+    open fun customizeBuilderOf(): (Builder) -> Builder = { self -> self }
 
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
 

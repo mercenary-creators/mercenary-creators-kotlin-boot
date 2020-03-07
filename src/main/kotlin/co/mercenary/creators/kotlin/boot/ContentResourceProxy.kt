@@ -18,9 +18,11 @@ package co.mercenary.creators.kotlin.boot
 
 import co.mercenary.creators.kotlin.util.*
 import co.mercenary.creators.kotlin.util.io.*
+import com.fasterxml.jackson.annotation.JsonIgnoreType
 import org.springframework.core.io.Resource
 import java.io.InputStream
 
+@JsonIgnoreType
 open class ContentResourceProxy @JvmOverloads constructor(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 
     private val cache: CachedContentResource by lazy {
@@ -30,6 +32,10 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
     private val name = getResolvedContentPath(base, path)
 
     private val kind = getResolvedContentType(type, name)
+
+    override fun toMapNames(): Map<String, Any?> {
+        return mapOf("name" to javaClass.name, "path" to getContentPath(), "type" to getContentType(), "time" to getContentTime().toDate())
+    }
 
     override fun getContentData(): ByteArray {
         return getInputStream().toByteArray()

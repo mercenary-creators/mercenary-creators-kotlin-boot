@@ -17,12 +17,14 @@
 package co.mercenary.creators.kotlin.boot.data
 
 import co.mercenary.creators.kotlin.boot.SecurePasswordEncoder
+import com.fasterxml.jackson.annotation.JsonIgnoreType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import javax.sql.DataSource
 
+@JsonIgnoreType
 abstract class AbstractDataSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     private val encoder: SecurePasswordEncoder by lazy {
