@@ -61,13 +61,13 @@ abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
     }
 
     @JvmOverloads
-    inline fun <reified T : Any> put(base: String, body: Any, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
-        return getWebClient(base).put().path(path).contentType(type).bodyValue(body).retrieve().bodyToMono(typeOf())
+    inline fun <reified T : Any> put(base: String, body: Any, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Int {
+        return getWebClient(base).put().path(path).contentType(type).bodyValue(body).exchange().block()!!.rawStatusCode()
     }
 
     @JvmOverloads
-    inline fun <reified T : Any, reified B : Publisher<B>> put(base: String, body: B, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Mono<T> {
-        return getWebClient(base).put().path(path).contentType(type).body(body, typeOf<B>()).retrieve().bodyToMono(typeOf())
+    inline fun <reified T : Any, reified B : Publisher<B>> put(base: String, body: B, path: String = EMPTY_STRING, type: MediaType = MediaType.APPLICATION_JSON): Int {
+        return getWebClient(base).put().path(path).contentType(type).body(body, typeOf<B>()).exchange().block()!!.rawStatusCode()
     }
 
     @JvmOverloads

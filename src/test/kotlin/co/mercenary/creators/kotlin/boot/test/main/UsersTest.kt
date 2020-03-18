@@ -24,7 +24,7 @@ class UsersTest : KotlinTest() {
     @Test
     fun test() {
         val list = queryListOf<UserPartialData>("SELECT username, enabled FROM users")
-        info { toJSONString(list) }
+        info { list }
         assumeEach {
             assumeThat {
                 info { 1 }

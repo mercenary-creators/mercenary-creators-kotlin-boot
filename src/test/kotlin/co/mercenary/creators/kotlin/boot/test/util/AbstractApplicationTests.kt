@@ -17,18 +17,26 @@
 package co.mercenary.creators.kotlin.boot.test.util
 
 import co.mercenary.creators.kotlin.boot.data.AbstractApplicationDataSupport
-import co.mercenary.creators.kotlin.json.base.JSONStatic
+import co.mercenary.creators.kotlin.util.*
+import co.mercenary.creators.kotlin.util.test.MercenaryMultipleAssertExceptiion
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.TestPropertySource
+import kotlin.reflect.KClass
 
 @SpringBootTest(classes = [MainTestConfiguration::class])
 @TestPropertySource(properties = ["test.bean.name=mercenary:test"], locations = ["classpath:application.properties"])
 abstract class AbstractApplicationTests @JvmOverloads constructor(results: String = "results") : AbstractApplicationDataSupport(results) {
+
+    private val nope = arrayListOf<Class<*>>()
+
+    init {
+        Encoders
+        addThrowableAsFatal(OutOfMemoryError::class)
+        addThrowableAsFatal(StackOverflowError::class)
+    }
 
     @Autowired
     private lateinit var pass: PasswordEncoder
@@ -37,17 +45,7 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
         @JsonIgnore
         get() = pass
 
-    protected val printer: (Int, String) -> Unit = { i, s -> info { "%2d : %s".format(i + 1, s) }}
-
-    fun toJSONString(data: Any, pretty: Boolean = true): String = JSONStatic.toJSONString(data, pretty)
-
-    fun assertTrue(condition: Boolean) {
-        Assertions.assertTrue(condition)
-    }
-
-    fun assertFalse(condition: Boolean) {
-        Assertions.assertFalse(condition)
-    }
+    protected val printer: (Int, String) -> Unit = { i, s -> info { "%2d : %s".format(i + 1, s) } }
 
     fun hours(value: Int): Long = java.util.concurrent.TimeUnit.HOURS.toMillis(value.toLong())
 
@@ -57,188 +55,95 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
 
     fun milliseconds(value: Int): Long = java.util.concurrent.TimeUnit.MILLISECONDS.toMillis(value.toLong())
 
-    fun assertEquals(expected: Any?, actual: Any?) {
-        when (expected) {
-            is ByteArray -> {
-                when (actual) {
-                    is ByteArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is CharArray -> {
-                when (actual) {
-                    is CharArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is ShortArray -> {
-                when (actual) {
-                    is ShortArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is IntArray -> {
-                when (actual) {
-                    is IntArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is LongArray -> {
-                when (actual) {
-                    is LongArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is FloatArray -> {
-                when (actual) {
-                    is FloatArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is DoubleArray -> {
-                when (actual) {
-                    is DoubleArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is BooleanArray -> {
-                when (actual) {
-                    is BooleanArray -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is Array<*> -> {
-                when (actual) {
-                    is Array<*> -> assertTrue(expected.contentEquals(actual))
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            is Iterable<*> -> {
-                when (actual) {
-                    is Iterable<*> -> {
-                        if (expected == actual) {
-                            return
-                        }
-                        Assertions.assertEquals(expected.toList(), actual.toList())
-                    }
-                    null -> fail { NOT_SAME_NULL }
-                    else -> fail { NOT_SAME_TYPE }
-                }
-            }
-            else -> Assertions.assertEquals(expected, actual)
+    @JvmOverloads
+    @AssumptionDsl
+    fun dash(loop: Int = 64): String = "-".repeat(loop.abs())
+
+    @AssumptionDsl
+    fun uuid(): String = Randoms.uuid()
+
+    @AssumptionDsl
+    protected fun fail(text: String): Nothing {
+        throw MercenaryAssertExceptiion(text)
+    }
+
+    @AssumptionDsl
+    protected fun fail(@AssumptionDsl func: () -> Any?): Nothing {
+        fail(Formatters.toSafeString(func))
+    }
+
+    @AssumptionDsl
+    protected fun assertTrueOf(condition: Boolean, @AssumptionDsl func: () -> Any?) {
+        if (!condition) {
+            fail(func)
         }
     }
 
-    fun assertNotEquals(expected: Any?, actual: Any?) {
-        when (expected) {
-            is ByteArray -> {
-                when (actual) {
-                    is ByteArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
+    private fun getThrowableOf(@AssumptionDsl func: () -> Unit): Throwable? {
+        return try {
+            func.invoke()
+            null
+        }
+        catch (oops: Throwable) {
+            nope.forEach { type ->
+                if (type.isInstance(oops)) {
+                    throw oops
                 }
             }
-            is CharArray -> {
-                when (actual) {
-                    is CharArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is ShortArray -> {
-                when (actual) {
-                    is ShortArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is IntArray -> {
-                when (actual) {
-                    is IntArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is LongArray -> {
-                when (actual) {
-                    is LongArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is FloatArray -> {
-                when (actual) {
-                    is FloatArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is DoubleArray -> {
-                when (actual) {
-                    is DoubleArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is BooleanArray -> {
-                when (actual) {
-                    is BooleanArray -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is Array<*> -> {
-                when (actual) {
-                    is Array<*> -> assertFalse(expected.contentEquals(actual))
-                    else -> return
-                }
-            }
-            is Iterable<*> -> {
-                when (actual) {
-                    is Iterable<*> -> {
-                        if (expected == actual) {
-                            fail { ARE_SAME_TYPE }
-                        }
-                        Assertions.assertNotEquals(expected.toList(), actual.toList())
-                    }
-                    else -> return
-                }
-            }
-            else -> Assertions.assertNotEquals(expected, actual)
+            oops
         }
     }
 
-    infix fun <T : Any> T?.shouldBe(value: Any?) = assertEquals(value, this)
-
-    infix fun <T : Any> T?.shouldNotBe(value: Any?) = assertNotEquals(value, this)
-
-    fun assumeEach(block: AssumeExecutable.() -> Unit) {
-        AssumeExecutable(block).also { it.execute() }
+    @AssumptionDsl
+    final fun <T : Throwable> addThrowableAsFatal(type: Class<T>) {
+        nope += type
     }
 
-    inner class AssumeExecutable(block: AssumeExecutable.() -> Unit) {
+    @AssumptionDsl
+    final fun <T : Throwable> addThrowableAsFatal(type: KClass<T>) {
+        nope += type.java
+    }
 
-        private val list = arrayListOf<Executable>()
+    @AssumptionDsl
+    fun assumeEach(@AssumptionDsl block: AssumeCollector.() -> Unit) {
+        AssumeCollector(block).also { it.invoke() }
+    }
+
+    @AssumptionDsl
+    inner class AssumeCollector(@AssumptionDsl block: AssumeCollector.() -> Unit) {
+
+        private val list = arrayListOf<() -> Unit>()
 
         init {
             block(this)
         }
 
-        fun assumeThat(block: () -> Unit) {
-            list += Executable { block() }
+        @AssumptionDsl
+        fun assumeThat(@AssumptionDsl block: () -> Unit) {
+            list += block
         }
 
-        fun execute() {
+        operator fun invoke() {
             if (list.isNotEmpty()) {
-                Assertions.assertAll(list)
+                val look = list.mapNotNull { getThrowableOf(it) }
+                if (look.isNotEmpty()) {
+                    val oops = MercenaryMultipleAssertExceptiion(look)
+                    look.forEach {
+                        oops.addSuppressed(it)
+                    }
+                    throw oops
+                }
             }
         }
     }
 
-    companion object {
-        private const val NOT_SAME_TYPE = "not same type."
-        private const val NOT_SAME_NULL = "not same null."
-        private const val ARE_SAME_TYPE = "are same type."
+    @AssumptionDsl
+    protected infix fun <T : Any?> T.shouldBe(value: T) = assertTrueOf(value isSameAs this) {
+        "shouldBe failed"
+    }
+
+    @AssumptionDsl
+    protected infix fun <T : Any?> T.shouldNotBe(value: T) = assertTrueOf(value isNotSameAs this) {
+        "shouldNotBe failed"
     }
 }

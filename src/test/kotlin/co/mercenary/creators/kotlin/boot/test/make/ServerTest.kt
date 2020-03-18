@@ -27,7 +27,7 @@ class ServerTest : KotlinTest() {
         info { list }
         val data = update("DELETE FROM servers")
         info { data }
-        repeat(20) {
+        repeat(15) {
             val even = it.rem(2) == 0
             val addy = "192.178.255." + Randoms.getInteger(255)
             val node = it.toString(16).toUpperCase().padStart(8, '0')

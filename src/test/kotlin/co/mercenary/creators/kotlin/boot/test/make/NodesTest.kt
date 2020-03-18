@@ -27,7 +27,7 @@ class NodesTest : KotlinTest() {
         info { list }
         val data = update("DELETE FROM nodes")
         info { data }
-        repeat(20) {
+        repeat(15) {
             val even = it.rem(2) == 0
             val node = it.toString(16).toUpperCase().padStart(8, '0')
             val time = getTimeStamp().plus(seconds(it).plus(milliseconds(it))).toDate()
