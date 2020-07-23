@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-@file:kotlin.jvm.JvmName("TestKt")
+package co.mercenary.creators.kotlin.boot
 
-package co.mercenary.creators.kotlin.boot.test
+import co.mercenary.creators.kotlin.json.JSONAware
 
-typealias KotlinTest = co.mercenary.creators.kotlin.boot.test.util.AbstractApplicationTests
-
-
+data class UserPartialData(val username: String, val enabled: Boolean) : JSONAware {
+    override fun toString() = toJSONString()
+}

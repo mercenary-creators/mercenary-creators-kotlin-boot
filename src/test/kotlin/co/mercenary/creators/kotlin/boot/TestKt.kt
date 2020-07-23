@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-package co.mercenary.creators.kotlin.boot.data
+@file:kotlin.jvm.JvmName("TestKt")
 
-import co.mercenary.creators.kotlin.json.base.JSONAware
+package co.mercenary.creators.kotlin.boot
 
-data class UserPartialData(val username: String, val enabled: Boolean) : JSONAware {
-    override fun toString() = toJSONString()
+import co.mercenary.creators.kotlin.util.*
+
+typealias KotlinTest = co.mercenary.creators.kotlin.boot.test.util.AbstractApplicationTests
+
+@CreatorsDsl
+fun Boolean.toKind(): String {
+    if (isTrue()) {
+        return "Linux"
+    }
+    if (Randoms.getBoolean()) {
+        return "Linux"
+    }
+    if (Randoms.getBoolean()) {
+        return "Windows"
+    }
+    return "macOS"
 }
+
+

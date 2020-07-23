@@ -16,8 +16,8 @@
 
 package co.mercenary.creators.kotlin.boot
 
+import co.mercenary.creators.kotlin.util.TimeAndDate
 import co.mercenary.creators.kotlin.json.module.MercenaryKotlinModule
-import co.mercenary.creators.kotlin.util.time.TimeAndDate
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.web.servlet.config.annotation.*

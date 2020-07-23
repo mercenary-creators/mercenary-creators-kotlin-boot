@@ -18,9 +18,9 @@ package co.mercenary.creators.kotlin.boot.data
 
 import co.mercenary.creators.kotlin.boot.AbstractApplicationSupport
 import co.mercenary.creators.kotlin.json.*
-import co.mercenary.creators.kotlin.util.IgnoreForSerialize
+import co.mercenary.creators.kotlin.util.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.*
+import org.springframework.jdbc.core.JdbcTemplate
 
 abstract class AbstractApplicationDataSupport @JvmOverloads constructor(private val results: String = "results", private val updated: String = "updated") : AbstractApplicationSupport() {
 
@@ -35,14 +35,18 @@ abstract class AbstractApplicationDataSupport @JvmOverloads constructor(private 
         @IgnoreForSerialize
         get() = results.trim()
 
-
+    @CreatorsDsl
     protected fun update(sql: String, vararg args: Any?) = json(keys to json(updated.trim() to jdbc.update(sql, *args)))
 
+    @CreatorsDsl
     protected fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
 
+    @CreatorsDsl
     protected fun query(sql: String, vararg args: Any?) = json(keys to queryList(sql, *args))
 
+    @CreatorsDsl
     protected inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(keys to queryListOf<T>(sql, *args))
 
-    protected inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) emptyList() else it.toDataType() }
+    @CreatorsDsl
+    protected inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) listOf() else it.toDataType() }
 }

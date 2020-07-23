@@ -16,7 +16,8 @@
 
 package co.mercenary.creators.kotlin.boot.test.main
 
-import co.mercenary.creators.kotlin.boot.test.*
+import co.mercenary.creators.kotlin.boot.*
+import co.mercenary.creators.kotlin.util.*
 import org.junit.jupiter.api.Test
 
 class PasswordsTest : KotlinTest() {
@@ -24,11 +25,15 @@ class PasswordsTest : KotlinTest() {
     fun test() {
         val pass = "abc123"
         val nope = "def456"
-        val code = encoder.encode(pass)
-        info { code }
+        val code = encoder.encode(pass).also { info { it } }
         nope shouldNotBe pass
         code shouldNotBe pass
+        code shouldNotBe nope
         encoder.matches(pass, code) shouldBe true
         encoder.matches(nope, code) shouldBe false
+        encoder.matches(code, code) shouldBe false
+        MAX_RESILTS.forEach {
+            warn { Randoms.getInteger(1..6) }
+        }
     }
 }

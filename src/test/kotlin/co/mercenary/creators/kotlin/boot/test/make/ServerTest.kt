@@ -16,7 +16,7 @@
 
 package co.mercenary.creators.kotlin.boot.test.make
 
-import co.mercenary.creators.kotlin.boot.test.KotlinTest
+import co.mercenary.creators.kotlin.boot.*
 import co.mercenary.creators.kotlin.util.*
 import org.junit.jupiter.api.Test
 
@@ -27,14 +27,14 @@ class ServerTest : KotlinTest() {
         info { list }
         val data = update("DELETE FROM servers")
         info { data }
-        repeat(15) {
-            val even = it.rem(2) == 0
+        MAX_RESILTS.forEach {
+            val even = it.isEven().toAtomic()
             val addy = "192.178.255." + Randoms.getInteger(255)
-            val node = it.toString(16).toUpperCase().padStart(8, '0')
-            val time = getTimeStamp().plus(seconds(it).plus(milliseconds(it))).toDate()
-            val type = if (even) "Linux" else if (Randoms.getBoolean()) "macOS" else "Windows"
-            val rack = Randoms.getString(10).toUpperCase().plus("-").plus(Randoms.getInteger(6).plus(1))
-            val many = update("INSERT INTO servers(node,rack,address,boot,installed,type,disks) VALUES(?,?,?,?,?,?,?)", node, rack, addy, Randoms.getBoolean().and(even).not(), time, type, Randoms.getInteger(6).plus(10))
+            val node = it.toHexString(8).toUpperCaseEnglish()
+            val time = dateOf() + it.seconds + it.milliseconds
+            val type = even.isTrue().toKind()
+            val rack = Randoms.getString(10).toUpperCaseEnglish() + "-" + Randoms.getInteger(1..6)
+            val many = update("INSERT INTO servers(node,rack,address,boot,installed,type,disks) VALUES(?,?,?,?,?,?,?)", node, rack, addy, Randoms.getBoolean().and(even).isNotTrue(), time, type, Randoms.getInteger(10..15))
             info { many }
         }
         val look = query("SELECT * FROM servers")

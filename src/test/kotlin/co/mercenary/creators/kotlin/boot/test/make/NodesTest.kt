@@ -16,7 +16,7 @@
 
 package co.mercenary.creators.kotlin.boot.test.make
 
-import co.mercenary.creators.kotlin.boot.test.KotlinTest
+import co.mercenary.creators.kotlin.boot.*
 import co.mercenary.creators.kotlin.util.*
 import org.junit.jupiter.api.Test
 
@@ -27,13 +27,13 @@ class NodesTest : KotlinTest() {
         info { list }
         val data = update("DELETE FROM nodes")
         info { data }
-        repeat(15) {
-            val even = it.rem(2) == 0
-            val node = it.toString(16).toUpperCase().padStart(8, '0')
-            val time = getTimeStamp().plus(seconds(it).plus(milliseconds(it))).toDate()
-            val type = if (even) "Linux" else if (Randoms.getBoolean()) "macOS" else "Windows"
-            val host = uuid().toUpperCase().replace("-", ".").plus(".${node}.dcam.wellsfargo.com")
-            val many = update("INSERT INTO nodes(name,host,type,time,active) VALUES(?,?,?,?,?)", node, host, type, time, Randoms.getBoolean().and(even).not())
+        MAX_RESILTS.forEach {
+            val even = it.isEven().toAtomic()
+            val node = it.toHexString(8).toUpperCaseEnglish()
+            val time = dateOf() + it.seconds + it.milliseconds
+            val type = even.isTrue().toKind()
+            val host = guid(".${node}.dcam.wellsfargo.com")
+            val many = update("INSERT INTO nodes(name,host,type,time,active) VALUES(?,?,?,?,?)", node, host, type, time, Randoms.getBoolean().and(even).isNotTrue())
             info { many }
         }
         val look = query("SELECT * FROM nodes")

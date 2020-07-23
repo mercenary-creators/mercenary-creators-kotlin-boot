@@ -16,13 +16,37 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.util.IgnoreForSerialize
+import co.mercenary.creators.kotlin.util.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.security.SecureRandom
 
 @IgnoreForSerialize
-class SecurePasswordEncoder @JvmOverloads constructor(strength: Int = DEFAULT_STRENGTH, random: SecureRandom = SecureRandom()) : BCryptPasswordEncoder(strength, random) {
+class SecurePasswordEncoder @JvmOverloads @CreatorsDsl constructor(strength: Int = DEFAULT_STRENGTH, random: SecureRandom = Randoms.randomOf()) : BCryptPasswordEncoder(strengthOf(strength), random) {
+
+    override fun toString() = nameOf()
+
+    override fun hashCode() = idenOf()
+
+    override fun equals(other: Any?) = when (other) {
+        is SecurePasswordEncoder -> this === other
+        else -> false
+    }
+
     companion object {
+
+        @CreatorsDsl
+        const val MINIMUM_STRENGTH = 4
+
+        @CreatorsDsl
+        const val MAXIMUM_STRENGTH = 31
+
+        @CreatorsDsl
         const val DEFAULT_STRENGTH = 12
+
+        @JvmStatic
+        @CreatorsDsl
+        fun strengthOf(strength: Int): Int {
+            return if (strength < 1) DEFAULT_STRENGTH else strength.boxIn(MINIMUM_STRENGTH, MAXIMUM_STRENGTH)
+        }
     }
 }

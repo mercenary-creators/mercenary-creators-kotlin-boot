@@ -19,7 +19,6 @@ package co.mercenary.creators.kotlin.boot.test.util
 import co.mercenary.creators.kotlin.boot.data.AbstractApplicationDataSupport
 import co.mercenary.creators.kotlin.util.*
 import co.mercenary.creators.kotlin.util.test.MercenaryMultipleAssertExceptiion
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -41,45 +40,44 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
     @Autowired
     private lateinit var pass: PasswordEncoder
 
+    @CreatorsDsl
     val encoder: PasswordEncoder
-        @JsonIgnore
+        @IgnoreForSerialize
         get() = pass
 
+    @CreatorsDsl
     protected val printer: (Int, String) -> Unit = { i, s -> info { "%2d : %s".format(i + 1, s) } }
 
-    fun hours(value: Int): Long = java.util.concurrent.TimeUnit.HOURS.toMillis(value.toLong())
-
-    fun minutes(value: Int): Long = java.util.concurrent.TimeUnit.MINUTES.toMillis(value.toLong())
-
-    fun seconds(value: Int): Long = java.util.concurrent.TimeUnit.SECONDS.toMillis(value.toLong())
-
-    fun milliseconds(value: Int): Long = java.util.concurrent.TimeUnit.MILLISECONDS.toMillis(value.toLong())
-
+    @CreatorsDsl
     @JvmOverloads
-    @AssumptionDsl
     fun dash(loop: Int = 64): String = "-".repeat(loop.abs())
 
-    @AssumptionDsl
+    @CreatorsDsl
     fun uuid(): String = Randoms.uuid()
 
-    @AssumptionDsl
+    @CreatorsDsl
+    @JvmOverloads
+    fun guid(tail: String = EMPTY_STRING): String = Randoms.uuid().toUpperCaseEnglish().replace("-", ".").plus(tail)
+
+    @CreatorsDsl
     protected fun fail(text: String): Nothing {
         throw MercenaryAssertExceptiion(text)
     }
 
-    @AssumptionDsl
-    protected fun fail(@AssumptionDsl func: () -> Any?): Nothing {
+    @CreatorsDsl
+    protected fun fail(func: () -> Any?): Nothing {
         fail(Formatters.toSafeString(func))
     }
 
-    @AssumptionDsl
-    protected fun assertTrueOf(condition: Boolean, @AssumptionDsl func: () -> Any?) {
+    @CreatorsDsl
+    protected fun assertTrueOf(condition: Boolean, func: () -> Any?) {
         if (!condition) {
             fail(func)
         }
     }
 
-    private fun getThrowableOf(@AssumptionDsl func: () -> Unit): Throwable? {
+    @CreatorsDsl
+    private fun getThrowableOf(func: () -> Unit): Throwable? {
         return try {
             func.invoke()
             null
@@ -94,23 +92,22 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
         }
     }
 
-    @AssumptionDsl
+    @CreatorsDsl
     final fun <T : Throwable> addThrowableAsFatal(type: Class<T>) {
         nope += type
     }
 
-    @AssumptionDsl
+    @CreatorsDsl
     final fun <T : Throwable> addThrowableAsFatal(type: KClass<T>) {
         nope += type.java
     }
 
-    @AssumptionDsl
-    fun assumeEach(@AssumptionDsl block: AssumeCollector.() -> Unit) {
+    @CreatorsDsl
+    fun assumeEach(block: AssumeCollector.() -> Unit) {
         AssumeCollector(block).also { it.invoke() }
     }
 
-    @AssumptionDsl
-    inner class AssumeCollector(@AssumptionDsl block: AssumeCollector.() -> Unit) {
+    inner class AssumeCollector(block: AssumeCollector.() -> Unit) {
 
         private val list = arrayListOf<() -> Unit>()
 
@@ -118,8 +115,8 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
             block(this)
         }
 
-        @AssumptionDsl
-        fun assumeThat(@AssumptionDsl block: () -> Unit) {
+        @CreatorsDsl
+        fun assumeThat(block: () -> Unit) {
             list += block
         }
 
@@ -137,12 +134,12 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
         }
     }
 
-    @AssumptionDsl
+    @CreatorsDsl
     protected infix fun <T : Any?> T.shouldBe(value: T) = assertTrueOf(value isSameAs this) {
         "shouldBe failed"
     }
 
-    @AssumptionDsl
+    @CreatorsDsl
     protected infix fun <T : Any?> T.shouldNotBe(value: T) = assertTrueOf(value isNotSameAs this) {
         "shouldNotBe failed"
     }

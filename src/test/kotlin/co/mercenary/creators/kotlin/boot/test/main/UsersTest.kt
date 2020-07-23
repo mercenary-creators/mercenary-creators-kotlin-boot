@@ -16,15 +16,13 @@
 
 package co.mercenary.creators.kotlin.boot.test.main
 
-import co.mercenary.creators.kotlin.boot.data.UserPartialData
-import co.mercenary.creators.kotlin.boot.test.KotlinTest
+import co.mercenary.creators.kotlin.boot.*
 import org.junit.jupiter.api.Test
 
 class UsersTest : KotlinTest() {
     @Test
     fun test() {
-        val list = queryListOf<UserPartialData>("SELECT username, enabled FROM users")
-        info { list }
+        val list = queryListOf<UserPartialData>("SELECT username, enabled FROM users").also { info { it } }
         assumeEach {
             assumeThat {
                 info { 1 }
@@ -39,7 +37,8 @@ class UsersTest : KotlinTest() {
                 (1..3) shouldBe (1..3)
             }
         }
-        val look = query("SELECT * FROM users")
-        info { look }
+        val look = query("SELECT * FROM users").also { info { it } }
+        val size = look.size
+        info { size }
     }
 }

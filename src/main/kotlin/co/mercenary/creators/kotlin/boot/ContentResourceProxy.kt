@@ -18,12 +18,11 @@ package co.mercenary.creators.kotlin.boot
 
 import co.mercenary.creators.kotlin.util.*
 import co.mercenary.creators.kotlin.util.io.*
-import com.fasterxml.jackson.annotation.JsonIgnoreType
 import org.springframework.core.io.Resource
 import java.io.InputStream
 
-@JsonIgnoreType
-open class ContentResourceProxy @JvmOverloads constructor(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
+@IgnoreForSerialize
+open class ContentResourceProxy @JvmOverloads @CreatorsDsl constructor(private val base: Resource, path: String = EMPTY_STRING, type: String = DEFAULT_CONTENT_TYPE) : ContentResource {
 
     private val cache: CachedContentResource by lazy {
         ByteArrayContentResource(getContentData(), getContentPath(), getContentType(), getContentTime(), getContentLook())
@@ -33,50 +32,80 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
 
     private val kind = getResolvedContentType(type, name)
 
+    @CreatorsDsl
     override fun toMapNames(): Map<String, Any?> {
-        return mapOf("name" to javaClass.name, "path" to getContentPath(), "type" to getContentType(), "time" to getContentTime().toDate())
+        return dictOf("name" to nameOf(), "path" to getContentPath(), "type" to getContentType(), "time" to getContentTime().toDate())
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentData(): ByteArray {
         return getInputStream().toByteArray()
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
+    override fun getContentKind() = EMPTY_STRING
+
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentLook(): ContentResourceLookup {
         return { base.createRelative(it).toContentResource() }
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
+    override fun getContentMime() = ContentMimeType(getContentType())
+
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentPath(): String {
         return name
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentSize(): Long {
         return base.contentLength()
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentTime(): Long {
         return base.lastModified()
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getContentType(): String {
         return kind
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getDescription(): String {
         return base.description
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun getInputStream(): InputStream {
         return base.inputStream
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun isContentCache(): Boolean {
         return false
     }
 
+    @CreatorsDsl
+    @IgnoreForSerialize
     override fun isContentThere(): Boolean {
         return base.exists()
     }
 
+    @CreatorsDsl
     override fun toContentCache(): CachedContentResource {
         return cache
     }
@@ -84,6 +113,7 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
     companion object {
 
         @JvmStatic
+        @CreatorsDsl
         fun getResolvedContentType(type: String, path: String): String {
             if (type.isDefaultContentType()) {
                 val look = getDefaultContentTypeProbe().getContentType(path)
@@ -96,6 +126,7 @@ open class ContentResourceProxy @JvmOverloads constructor(private val base: Reso
         }
 
         @JvmStatic
+        @CreatorsDsl
         fun getResolvedContentPath(base: Resource, path: String): String {
             try {
                 val name = getPathNormalizedOrElse(base.url.file)
