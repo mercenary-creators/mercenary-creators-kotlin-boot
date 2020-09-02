@@ -105,14 +105,19 @@ abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
 
     @CreatorsDsl
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)
+
     @CreatorsDsl
     fun getEnvironmentProperty(name: String, other: String): String = context.environment.getProperty(name, other)
+
     @CreatorsDsl
     fun getEnvironmentProperty(name: String, other: () -> String): String = context.environment.getProperty(name) ?: other()
+
     @CreatorsDsl
     inline fun <reified T : Any> getEnvironmentPropertyOf(name: String): T? = context.environment.getProperty(name, T::class.java)
+
     @CreatorsDsl
     inline fun <reified T : Any> getEnvironmentPropertyOf(name: String, other: T): T = context.environment.getProperty(name, T::class.java, other)
+
     @CreatorsDsl
     inline fun <reified T : Any> getEnvironmentPropertyOf(name: String, other: () -> T): T = context.environment.getProperty(name, T::class.java) ?: other()
 }

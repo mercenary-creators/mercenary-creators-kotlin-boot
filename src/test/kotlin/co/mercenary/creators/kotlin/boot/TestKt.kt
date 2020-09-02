@@ -23,6 +23,9 @@ import co.mercenary.creators.kotlin.util.*
 typealias KotlinTest = co.mercenary.creators.kotlin.boot.test.util.AbstractApplicationTests
 
 @CreatorsDsl
+const val MAX_RESILTS = 15
+
+@CreatorsDsl
 fun Boolean.toKind(): String {
     if (isTrue()) {
         return "Linux"

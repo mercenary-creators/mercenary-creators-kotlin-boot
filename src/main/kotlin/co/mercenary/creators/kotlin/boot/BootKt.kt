@@ -28,9 +28,7 @@ import reactor.core.publisher.*
 import java.util.concurrent.*
 import java.util.stream.*
 
-@CreatorsDsl
-const val MAX_RESILTS = 15
-fun <T : Any> Flux<T>.toList(): List<T> = collect(Collectors.toList()).block().orElse { emptyList() }
+fun <T : Any> Flux<T>.toList(): List<T> = collect(Collectors.toList()).block().orElse { listOf() }
 
 @CreatorsDsl
 fun <T : Any> Flux<T>.limit(size: Long): Flux<T> = limitRequest(size)

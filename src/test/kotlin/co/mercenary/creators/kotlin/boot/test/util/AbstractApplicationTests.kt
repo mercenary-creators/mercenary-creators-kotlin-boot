@@ -120,6 +120,7 @@ abstract class AbstractApplicationTests @JvmOverloads constructor(results: Strin
             list += block
         }
 
+        @CreatorsDsl
         operator fun invoke() {
             if (list.isNotEmpty()) {
                 val look = list.mapNotNull { getThrowableOf(it) }
