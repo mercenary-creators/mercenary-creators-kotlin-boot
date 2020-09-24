@@ -153,6 +153,9 @@ fun <T : Any> Flux<out Iterable<T>>.split(): Flux<T> = flatMapIterable { it }
 inline fun <reified T : Any> toParameterizedTypeReference() = object : ParameterizedTypeReference<T>() {}
 
 @CreatorsDsl
+inline fun <reified T : Any> org.springframework.beans.factory.BeanFactory.beanOf(): T = getBean(T::class.java)
+
+@CreatorsDsl
 inline fun <reified T : Any> boot(vararg args: String, init: SpringApplication.() -> Unit = {}): ConfigurableApplicationContext {
     LoggingFactory
     TimeAndDate.setDefaultTimeZone()

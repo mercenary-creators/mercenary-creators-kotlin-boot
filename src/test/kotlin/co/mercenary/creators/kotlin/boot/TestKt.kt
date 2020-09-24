@@ -26,17 +26,12 @@ typealias KotlinTest = co.mercenary.creators.kotlin.boot.test.util.AbstractAppli
 const val MAX_RESILTS = 15
 
 @CreatorsDsl
-fun Boolean.toKind(): String {
-    if (isTrue()) {
-        return "Linux"
+fun Int.toKind(): String {
+    return when (abs().minOf(MAX_RESILTS)) {
+        in (4..6) -> "macOS"
+        in (7..9) -> "Windows"
+        else -> "Linux"
     }
-    if (Randoms.getBoolean()) {
-        return "Linux"
-    }
-    if (Randoms.getBoolean()) {
-        return "Windows"
-    }
-    return "macOS"
 }
 
 

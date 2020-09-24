@@ -31,7 +31,7 @@ class NodesTest : KotlinTest() {
             val even = it.isEven().toAtomic()
             val node = it.toHexString(8).toUpperCaseEnglish()
             val time = dateOf() + it.seconds + it.milliseconds
-            val type = even.isTrue().toKind()
+            val type = it.toKind()
             val host = guid(".${node}.dcam.wellsfargo.com")
             val many = update("INSERT INTO nodes(name,host,type,time,active) VALUES(?,?,?,?,?)", node, host, type, time, Randoms.getBoolean().and(even).isNotTrue())
             info { many }

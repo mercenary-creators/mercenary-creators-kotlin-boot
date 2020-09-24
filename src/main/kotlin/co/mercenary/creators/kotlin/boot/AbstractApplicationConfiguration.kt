@@ -16,14 +16,16 @@
 
 package co.mercenary.creators.kotlin.boot
 
-import co.mercenary.creators.kotlin.util.TimeAndDate
 import co.mercenary.creators.kotlin.json.module.MercenaryKotlinModule
+import co.mercenary.creators.kotlin.util.TimeAndDate
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.web.servlet.config.annotation.*
 import org.springframework.web.servlet.resource.PathResourceResolver
 
-abstract class AbstractApplicationConfiguration @JvmOverloads constructor(private val list: List<String> = listOf("/resources/"), private val period: Int = 3600) : WebMvcConfigurer {
+abstract class AbstractApplicationConfiguration @JvmOverloads constructor(private val period: Int = 3600, vararg args: Pair<String, String>) : WebMvcConfigurer {
+
+    private val list = args.toList().unzip().toList()
 
     @Bean
     open fun bootJackson() = Jackson2ObjectMapperBuilderCustomizer {
@@ -31,32 +33,6 @@ abstract class AbstractApplicationConfiguration @JvmOverloads constructor(privat
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        if (list.isNotEmpty()) {
-            val locs = list.map { snap(it) }.filter { it.isNotEmpty() }.distinct().toTypedArray()
-            val hand = locs.map { it.plus(STARS).plus(STARS) }.distinct().toTypedArray()
-            registry.addResourceHandler(*hand).addResourceLocations(*locs).setCachePeriod(period).resourceChain(true).addResolver(PathResourceResolver())
-        }
-    }
-
-    companion object {
-        private const val SLASH = "/"
-        private const val STARS = "*"
-        private fun snap(data: String): String {
-            var temp = data.trim()
-            while (temp.startsWith(SLASH)) {
-                temp = temp.removePrefix(SLASH).trim()
-            }
-            while (temp.endsWith(SLASH)) {
-                temp = temp.removeSuffix(SLASH).trim()
-            }
-            while (temp.endsWith(STARS)) {
-                temp = temp.removeSuffix(STARS).trim()
-            }
-            temp = temp.trim()
-            if (temp.isEmpty()) {
-                return temp
-            }
-            return SLASH.plus(temp).plus(SLASH)
-        }
+        registry.addResourceHandler(*list[0].toTypedArray()).addResourceLocations(*list[1].toTypedArray()).setCachePeriod(period).resourceChain(true).addResolver(PathResourceResolver())
     }
 }

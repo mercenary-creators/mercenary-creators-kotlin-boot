@@ -32,7 +32,7 @@ class ServerTest : KotlinTest() {
             val addy = "192.178.255." + Randoms.getInteger(255)
             val node = it.toHexString(8).toUpperCaseEnglish()
             val time = dateOf() + it.seconds + it.milliseconds
-            val type = even.isTrue().toKind()
+            val type = it.toKind()
             val rack = Randoms.getString(10).toUpperCaseEnglish() + "-" + Randoms.getInteger(1..6)
             val many = update("INSERT INTO servers(node,rack,address,boot,installed,type,disks) VALUES(?,?,?,?,?,?,?)", node, rack, addy, Randoms.getBoolean().and(even).isNotTrue(), time, type, Randoms.getInteger(10..15))
             info { many }

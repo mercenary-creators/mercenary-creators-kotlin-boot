@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
 
 @SpringBootTest(classes = [MainTestConfiguration::class])
 @TestPropertySource(properties = ["test.bean.name=mercenary:test"], locations = ["classpath:application.properties"])
-abstract class AbstractApplicationTests @JvmOverloads constructor(results: String = "results") : AbstractApplicationDataSupport(results) {
+abstract class AbstractApplicationTests : AbstractApplicationDataSupport() {
 
     private val nope = arrayListOf<Class<*>>()
 

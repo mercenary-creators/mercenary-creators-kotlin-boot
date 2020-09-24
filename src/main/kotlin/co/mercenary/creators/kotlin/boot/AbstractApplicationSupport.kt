@@ -21,7 +21,6 @@ import org.reactivestreams.Publisher
 import org.springframework.context.*
 import org.springframework.http.*
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClient.Builder
 import reactor.core.publisher.*
 
 @IgnoreForSerialize
@@ -93,7 +92,7 @@ abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
     }
 
     @CreatorsDsl
-    fun Builder.customize(): Builder {
+    fun WebClient.Builder.customize(): WebClient.Builder {
         return customizeBuilderOf().invoke(defaultHeaders(customizeHeadersOf()))
     }
 
@@ -101,7 +100,7 @@ abstract class AbstractApplicationSupport : Logging(), ApplicationContextAware {
     open fun customizeHeadersOf(): (HttpHeaders) -> Unit = { }
 
     @CreatorsDsl
-    open fun customizeBuilderOf(): (Builder) -> Builder = { self -> self }
+    open fun customizeBuilderOf(): (WebClient.Builder) -> WebClient.Builder = { self -> self }
 
     @CreatorsDsl
     fun getEnvironmentProperty(name: String): String? = context.environment.getProperty(name)

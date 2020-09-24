@@ -16,10 +16,10 @@
 
 buildscript {
     ext {
-        set('kotlinVersion', '1.4.0')
-        set('SPRING_BOOT_VERSION', '2.3.3.RELEASE')
+        set('kotlinVersion', '1.4.10')
+        set('SPRING_BOOT_VERSION', '2.3.4.RELEASE')
         set('JACKSON_DATA_BIND_VERSION', '2.11.2')
-        set('MERCENARY_CREATORS_JSON_VERSION', '9.9.0-SNAPSHOT')
+        set('MERCENARY_CREATORS_JSON_VERSION', '9.9.1-SNAPSHOT')
     }
     repositories {
         mavenCentral()
@@ -48,7 +48,7 @@ targetCompatibility = 1.8
 
 group = 'co.mercenary-creators'
 
-version = '9.9.0-SNAPSHOT'
+version = '9.9.1-SNAPSHOT'
 
 task doJavaDocs(type: Javadoc) {
     source = sourceSets.main.allJava
