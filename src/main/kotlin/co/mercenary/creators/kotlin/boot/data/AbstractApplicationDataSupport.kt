@@ -16,7 +16,7 @@
 
 package co.mercenary.creators.kotlin.boot.data
 
-import co.mercenary.creators.kotlin.boot.AbstractApplicationSupport
+import co.mercenary.creators.kotlin.boot.*
 import co.mercenary.creators.kotlin.json.*
 import co.mercenary.creators.kotlin.util.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,18 +39,18 @@ abstract class AbstractApplicationDataSupport : AbstractApplicationSupport() {
         @IgnoreForSerialize
         get() = "updated"
 
-    @CreatorsDsl
-    protected fun update(sql: String, vararg args: Any?) = json(results.trim() to json(updated.trim() to jdbc.update(sql, *args)))
+    @SQLMarker
+    protected fun update(sql: String, vararg args: Any?) = json(results.trim() pair json(updated.trim() pair jdbc.update(sql, *args)))
 
-    @CreatorsDsl
+    @SQLMarker
     protected fun queryList(sql: String, vararg args: Any?): List<Map<String, Any?>> = jdbc.queryForList(sql, *args)
 
-    @CreatorsDsl
-    protected fun query(sql: String, vararg args: Any?) = json(results.trim() to queryList(sql, *args))
+    @SQLMarker
+    protected fun query(sql: String, vararg args: Any?) = json(results.trim() pair queryList(sql, *args))
 
-    @CreatorsDsl
-    protected inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(results.trim() to queryListOf<T>(sql, *args))
+    @SQLMarker
+    protected inline fun <reified T : Any> queryOf(sql: String, vararg args: Any?) = json(results.trim() pair queryListOf<T>(sql, *args))
 
-    @CreatorsDsl
+    @SQLMarker
     protected inline fun <reified T : Any> queryListOf(sql: String, vararg args: Any?): List<T> = queryList(sql, *args).let { if (it.isEmpty()) listOf() else it.toDataType() }
 }
